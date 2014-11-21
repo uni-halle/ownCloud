@@ -4,7 +4,7 @@ packages=$(cat <<EOF
   libapache2-mod-php5
   libav-tools
   libreoffice-writer
-  php-apc
+  php5-apcu
   php-mime-type
   php5-ldap
   smbclient
@@ -12,6 +12,7 @@ packages=$(cat <<EOF
   php5-json
   php5-imagick
   php5-gd
+  php5-curl
   postfix 
 EOF
 )
