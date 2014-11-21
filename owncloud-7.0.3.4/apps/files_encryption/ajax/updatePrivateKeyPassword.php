@@ -30,6 +30,9 @@ $user = \OCP\User::getUser();
 // check new password
 $passwordCorrect = \OCP\User::checkPassword($user, $newPassword);
 
+//override erroneous ldap-authentication for objectguid
+//$passwordCorrect=true;
+
 if ($passwordCorrect !== false) {
 
 	$proxyStatus = \OC_FileProxy::$enabled;
