@@ -1,0 +1,80 @@
+#body-user #header,
+#body-settings #header,
+#body-pulic #header,
+#expanddiv,
+#navigation
+{
+    background-color: #005133;
+}
+#expanddiv,
+#navigation
+{
+    box-shadow: 0px 0px 7px #005133;
+}
+/*#navigation a,
+#expanddiv a
+{
+    color: #9bc34b;
+}
+/*tbody a {
+    color: #005133;
+}*/
+table td,
+table th {
+    border-bottom-color: #CDE1A5;
+}
+#app-navigation>* {
+    border-right: 1px solid #9bc34b;
+}
+#app-settings {
+    box-sizing: border-box;
+}
+
+#app-navigation .active,
+#app-navigation .active a
+{
+    background-color: #9bc34b;
+    color: #fff;
+}
+#app-navigation li:hover > a,
+#app-navigation .selected,
+#app-navigation .selected a {
+   background-color: #CDE1A5;
+   color: #343; 
+}
+.searchbox input[type="search"] {
+   padding-left: 1.7em;
+}
+#filestable tbody tr:hover,
+#filestable tbody tr.selected,
+tbody tr:active,
+table.multiselect thead th
+{
+   background-color: #CDE1A5;
+}
+#filestable tbody tr:hover td {
+   border-color: #9bc34b;
+}
+#body-login {
+    background: #9bc34b; /* Old browsers */
+}
+#body-login .login,
+#body-login a.warning:hover
+{
+    background: #005133;
+}
+#body-login p.info,
+#body-login form fieldset legend,
+#body-login #datadirContent label,
+#body-login form fieldset .warning-info,
+#body-login form input[type="checkbox"]+label {
+    color: #000;
+}
+/*#body-login p.info a, #body-login #showAdvanced {
+    color: #005133;
+}
+#body-login p.info a:hover, #body-login p.info a:focus {
+    opacity: 1;
+    color: #005133;
+}
+*/
