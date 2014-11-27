@@ -23,12 +23,12 @@ table td,
 table th {
     border-bottom-color: #CDE1A5;
 }
-#app-navigation>* {
+/*#app-navigation>* {
     border-right: 1px solid #9bc34b;
-}
+}*
 #app-settings {
     box-sizing: border-box;
-}
+}*/
 
 #app-navigation .active,
 #app-navigation .active a
