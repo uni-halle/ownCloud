@@ -29,8 +29,8 @@
     <script type="text/javascript" src="../_static/bootstrap.js"></script>
     <link rel="top" title="ownCloud Administrators Manual 7.0 documentation" href="../index.html" />
     <link rel="up" title="Installation" href="index.html" />
-    <link rel="next" title="Nginx Configuration" href="configuration_nginx.html" />
-    <link rel="prev" title="Other Installation Methods" href="installation_others.html" />
+    <link rel="next" title="Lighttpd Configuration" href="lighttpd_configuration.html" />
+    <link rel="prev" title="Hiawatha Configuration" href="hiawatha_configuration.html" />
 <script type="text/javascript">
 (function () {
   /**
@@ -118,13 +118,9 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../whats_new_admin.html">What&#8217;s New for Admins in ownCloud 7</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">Installation</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="installation_appliance.html">Appliances</a></li>
-<li class="toctree-l2"><a class="reference internal" href="installation_linux.html">Linux Distributions</a></li>
-<li class="toctree-l2"><a class="reference internal" href="installation_macos.html">Mac OS X</a></li>
-<li class="toctree-l2"><a class="reference internal" href="installation_windows.html">Windows 7 and Windows Server 2008</a></li>
-<li class="toctree-l2"><a class="reference internal" href="installation_ucs.html">Univention Corporate Server</a></li>
-<li class="toctree-l2"><a class="reference internal" href="installation_source.html">Manual Installation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="installation_others.html">Other Installation Methods</a></li>
+<li class="toctree-l2"><a class="reference internal" href="appliance_installation.html">ownCloud Appliances</a></li>
+<li class="toctree-l2"><a class="reference internal" href="apps_management_installation.html">Installing and Managing Apps</a></li>
+<li class="toctree-l2"><a class="reference internal" href="hiawatha_configuration.html">Hiawatha Configuration</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="">Installation Wizard</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#required-settings">Required Settings</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#advanced-options">Advanced Options</a></li>
@@ -132,10 +128,16 @@
 <li class="toctree-l3"><a class="reference internal" href="#note">Note</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="configuration_nginx.html">Nginx Configuration</a></li>
-<li class="toctree-l2"><a class="reference internal" href="configuration_lighttpd.html">Lighttpd Configuration</a></li>
-<li class="toctree-l2"><a class="reference internal" href="configuration_yaws.html">Yaws Configuration</a></li>
-<li class="toctree-l2"><a class="reference internal" href="configuration_hiawatha.html">Hiawatha Configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lighttpd_configuration.html">Lighttpd Configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="linux_installation.html">Linux Distributions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="macos_installation.html">Mac OS X</a></li>
+<li class="toctree-l2"><a class="reference internal" href="nginx_configuration.html">Nginx Configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="others_installation.html">Other Installation Methods</a></li>
+<li class="toctree-l2"><a class="reference internal" href="source_installation.html">Manual Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ucs_installation.html">Univention Corporate Server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="windows_installation.html">Windows 7 and Windows Server 2008</a></li>
+<li class="toctree-l2"><a class="reference internal" href="yaws_configuration.html">Yaws Configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="selinux_configuration.html">SELinux Configuration</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../configuration/index.html">Configuration</a></li>
@@ -201,7 +203,7 @@ visible!</li>
 <ul class="simple">
 <li>For a guideline on which database system to choose, and on pointers how to
 set them up for being available for php/ownCloud, see
-<a class="reference internal" href="../configuration/configuration_database.html"><em>Database Configuration</em></a></li>
+<a class="reference internal" href="../configuration/database_configuration.html"><em>Database Configuration</em></a></li>
 <li>Note that you will only be able to choose among the PHP database connectors
 which are actually installed on the system.</li>
 <li>It is not easily possible to migrate to another database system once you have

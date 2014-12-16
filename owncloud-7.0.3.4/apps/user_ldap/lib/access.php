@@ -403,6 +403,8 @@ class Access extends LDAPUtility implements user\IUserTools {
 
 		//a new user/group! Add it only if it doesn't conflict with other backend's users or existing groups
 		//disabling Cache is required to avoid that the new user is cached as not-existing in fooExists check
+		//NOTE: mind, disabling cache affects only this instance! Using it
+		// outside of core user management will still cache the user as non-existing.
 		$originalTTL = $this->connection->ldapCacheTTL;
 		$this->connection->setConfiguration(array('ldapCacheTTL' => 0));
 		if(($isUser && !\OCP\User::userExists($intName))
@@ -507,12 +509,21 @@ class Access extends LDAPUtility implements user\IUserTools {
 				if($isUsers) {
 					//cache the user names so it does not need to be retrieved
 					//again later (e.g. sharing dialogue).
+					$this->cacheUserExists($ocName);
 					$this->cacheUserDisplayName($ocName, $nameByLDAP);
 				}
 			}
 			continue;
 		}
 		return $ownCloudNames;
+	}
+
+	/**
+	 * caches a user as existing
+	 * @param string $ocName the internal ownCloud username
+	 */
+	public function cacheUserExists($ocName) {
+		$this->connection->writeToCache('userExists'.$ocName, true);
 	}
 
 	/**
@@ -928,7 +939,7 @@ class Access extends LDAPUtility implements user\IUserTools {
 		foreach($searchResults as $res) {
 			$count = intval($this->ldap->countEntries($cr, $res));
 			$counter += $count;
-			if($count === $limit) {
+			if($count > 0 && $count === $limit) {
 				$hasHitLimit = true;
 			}
 		}
@@ -1073,12 +1084,18 @@ class Access extends LDAPUtility implements user\IUserTools {
 	/**
 	* escapes (user provided) parts for LDAP filter
 	* @param string $input, the provided value
+	* @param bool $allowAsterisk wether in * at the beginning should be preserved
 	* @return string the escaped string
 	*/
-	public function escapeFilterPart($input) {
+	public function escapeFilterPart($input, $allowAsterisk = false) {
+		$asterisk = '';
+		if($allowAsterisk && strlen($input) > 0 && $input[0] === '*') {
+			$asterisk = '*';
+			$input = mb_substr($input, 1, null, 'UTF-8');
+		}
 		$search  = array('*', '\\', '(', ')');
 		$replace = array('\\*', '\\\\', '\\(', '\\)');
-		return str_replace($search, $replace, $input);
+		return $asterisk . str_replace($search, $replace, $input);
 	}
 
 	/**
@@ -1141,6 +1158,33 @@ class Access extends LDAPUtility implements user\IUserTools {
 	}
 
 	/**
+	 * creates a filter part for searches by splitting up the given search
+	 * string into single words
+	 * @param string $search the search term
+	 * @param string[] $searchAttributes needs to have at least two attributes,
+	 * otherwise it does not make sense :)
+	 * @return string the final filter part to use in LDAP searches
+	 * @throws \Exception
+	 */
+	private function getAdvancedFilterPartForSearch($search, $searchAttributes) {
+		if(!is_array($searchAttributes) || count($searchAttributes) < 2) {
+			throw new \Exception('searchAttributes must be an array with at least two string');
+		}
+		$searchWords = explode(' ', trim($search));
+		$wordFilters = array();
+		foreach($searchWords as $word) {
+			$word .= '*';
+			//every word needs to appear at least once
+			$wordMatchOneAttrFilters = array();
+			foreach($searchAttributes as $attr) {
+				$wordMatchOneAttrFilters[] = $attr . '=' . $word;
+			}
+			$wordFilters[] = $this->combineFilterWithOr($wordMatchOneAttrFilters);
+		}
+		return $this->combineFilterWithAnd($wordFilters);
+	}
+
+	/**
 	 * creates a filter part for searches
 	 * @param string $search the search term
 	 * @param string[]|null $searchAttributes
@@ -1150,7 +1194,19 @@ class Access extends LDAPUtility implements user\IUserTools {
 	 */
 	private function getFilterPartForSearch($search, $searchAttributes, $fallbackAttribute) {
 		$filter = array();
-		$search = empty($search) ? '*' : '*'.$search.'*';
+		$haveMultiSearchAttributes = (is_array($searchAttributes) && count($searchAttributes) > 0);
+		if($haveMultiSearchAttributes && strpos(trim($search), ' ') !== false) {
+			try {
+				return $this->getAdvancedFilterPartForSearch($search, $searchAttributes);
+			} catch(\Exception $e) {
+				\OCP\Util::writeLog(
+					'user_ldap',
+					'Creating advanced filter for search failed, falling back to simple method.',
+					\OCP\Util::INFO
+				);
+			}
+		}
+		$search = empty($search) ? '*' : $search.'*';
 		if(!is_array($searchAttributes) || count($searchAttributes) === 0) {
 			if(empty($fallbackAttribute)) {
 				return '';
@@ -1316,32 +1372,38 @@ class Access extends LDAPUtility implements user\IUserTools {
 	 * converts a binary SID into a string representation
 	 * @param string $sid
 	 * @return string
-	 * @link http://blogs.freebsdish.org/tmclaugh/2010/07/21/finding-a-users-primary-group-in-ad/#comment-2855
 	 */
 	public function convertSID2Str($sid) {
-		try {
-			if(!function_exists('bcadd')) {
-				\OCP\Util::writeLog('user_ldap',
-					'You need to install bcmath module for PHP to have support ' .
-					'for AD primary groups', \OCP\Util::WARN);
-				throw new \Exception('missing bcmath module');
-			}
-			$srl = ord($sid[0]);
-			$numberSubID = ord($sid[1]);
-			$x = substr($sid, 2, 6);
-			$h = unpack('N', "\x0\x0" . substr($x,0,2));
-			$l = unpack('N', substr($x,2,6));
-			$iav = bcadd(bcmul($h[1], bcpow(2,32)), $l[1]);
-			$subIDs = array();
-			for ($i=0; $i<$numberSubID; $i++) {
-				$subID = unpack('V', substr($sid, 8+4*$i, 4));
-				$subIDs[] = $subID[1];
-			}
-		} catch (\Exception $e) {
+		// The format of a SID binary string is as follows:
+		// 1 byte for the revision level
+		// 1 byte for the number n of variable sub-ids
+		// 6 bytes for identifier authority value
+		// n*4 bytes for n sub-ids
+		//
+		// Example: 010400000000000515000000a681e50e4d6c6c2bca32055f
+		//  Legend: RRNNAAAAAAAAAAAA11111111222222223333333344444444
+		$revision = ord($sid[0]);
+		$numberSubID = ord($sid[1]);
+
+		$subIdStart = 8; // 1 + 1 + 6
+		$subIdLength = 4;
+		if (strlen($sid) !== $subIdStart + $subIdLength * $numberSubID) {
+			// Incorrect number of bytes present.
 			return '';
 		}
 
-		return sprintf('S-%d-%d-%s', $srl, $iav, implode('-', $subIDs));
+		// 6 bytes = 48 bits can be represented using floats without loss of
+		// precision (see https://gist.github.com/bantu/886ac680b0aef5812f71)
+		$iav = number_format(hexdec(bin2hex(substr($sid, 2, 6))), 0, '', '');
+
+		$subIDs = array();
+		for ($i = 0; $i < $numberSubID; $i++) {
+			$subID = unpack('V', substr($sid, $subIdStart + $subIdLength * $i, $subIdLength));
+			$subIDs[] = sprintf('%u', $subID[1]);
+		}
+
+		// Result for example above: S-1-5-21-249921958-728525901-1594176202
+		return sprintf('S-%d-%s-%s', $revision, $iav, implode('-', $subIDs));
 	}
 
 	/**

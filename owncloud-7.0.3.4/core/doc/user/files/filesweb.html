@@ -120,12 +120,12 @@
 <li class="toctree-l1"><a class="reference internal" href="../webinterface.html">The ownCloud Web Interface</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">Files &amp; Synchronization</a><ul class="current">
 <li class="toctree-l2 current"><a class="current reference internal" href="">Accessing your Files Using the Web Interface</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#previewing-files">Previewing Files</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#navigating-inside-your-owncloud">Navigating Inside Your ownCloud</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#overlay-icons-show-sharing-status">Overlay Icons Show Sharing Status</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#creating-or-uploading-files-and-directories">Creating or Uploading Files and Directories</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#selecting-files-or-folders">Selecting Files or Folders</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#filtering-the-file-application-view">Filtering the File Application View</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#previewing-files">Previewing Files</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#moving-files">Moving Files</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#sharing-files-locally">Sharing Files Locally</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#creating-a-public-share">Creating a Public Share</a></li>
@@ -167,7 +167,6 @@ has the option to disable these features, so if any of them are missing on your
 system ask your server administrator.</p>
 <div class="figure">
 <img alt="../_images/users-files.png" src="../_images/users-files.png" />
-<p class="caption"><strong>ownCloud web interface Files app</strong></p>
 </div>
 <p>ownCloud version 7 can display thumbnail previews for image files, MP3 covers,
 and text files, if this enabled by your server administrator. Hover your cursor
@@ -190,13 +189,15 @@ shares with hyperlinks.</dd>
 <dt>Trash</dt>
 <dd>Delete the selected file or folder, or unshare a shared file or folder.</dd>
 </dl>
-<div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">The Shared folder has been removed from new installations of ownCloud
-7. Shares now appear in the top level of your file tree on your Files page.
-If you are upgrading from older ownCloud versions you will still have your
-old Shared folder. Your server administrator has the option to change this in
-the server&#8217;s <tt class="docutils literal"><span class="pre">config.php</span></tt> file with the <tt class="docutils literal"><span class="pre">'share_folder'</span> <span class="pre">=&gt;</span></tt> directive.</p>
+<div class="section" id="previewing-files">
+<h2>Previewing Files<a class="headerlink" href="#previewing-files" title="Permalink to this headline">¶</a></h2>
+<p>You can display uncompressed text files, OpenDocument files, videos, and image files in
+the ownCloud embedded viewers  by clicking on the file name. There may be other file types
+you can preview if your ownCloud administrator has enabled them. If ownCloud cannot
+display a file, it starts a download process and downloads the file to your computer.</p>
+<p>Video streaming by the native ownCloud video player depends on your Web browser and the
+video format. If your ownCloud administrator has enabled video streaming, and it doesn&#8217;t
+work in your Web browser, it may be a browser issue.</p>
 </div>
 <div class="section" id="navigating-inside-your-owncloud">
 <h2>Navigating Inside Your ownCloud<a class="headerlink" href="#navigating-inside-your-owncloud" title="Permalink to this headline">¶</a></h2>
@@ -289,14 +290,6 @@ quickly and easily view and manage files based on their share status.</p>
 as Dropbox, Google, and Amazon S3.</dd>
 </dl>
 </div>
-<div class="section" id="previewing-files">
-<h2>Previewing Files<a class="headerlink" href="#previewing-files" title="Permalink to this headline">¶</a></h2>
-<p>You can display uncompressed text files, OpenDocument files, and image
-files from the ownCloud server by clicking on the file name. There may be
-other file types you can preview if your ownCloud administrator has enabled
-them. If ownCloud cannot display a file, it starts a download process and
-downloads the file to your computer.</p>
-</div>
 <div class="section" id="moving-files">
 <h2>Moving Files<a class="headerlink" href="#moving-files" title="Permalink to this headline">¶</a></h2>
 <p>Using the ownCloud web interface, you can move files and folders by dragging
@@ -308,6 +301,14 @@ and dropping them into any directory.</p>
 with a local user, group, or any person online with a public link. Shared files
 and folders are labeled with the triangular share icon, and the status <em>Shared</em>
 in the file or folder row.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">The Shared folder has been removed from new installations of ownCloud
+7. Shares now appear in the top level of your file tree on your Files page.
+If you are upgrading from older ownCloud versions you will still have your
+old Shared folder. Your server administrator has the option to change this in
+the server&#8217;s <tt class="docutils literal"><span class="pre">config.php</span></tt> file with the <tt class="docutils literal"><span class="pre">'share_folder'</span> <span class="pre">=&gt;</span></tt> directive.</p>
+</div>
 <p>To create a local share with other users or groups on your ownCloud server:</p>
 <ol class="arabic simple">
 <li>Hover your cursor over an item on the Files page</li>

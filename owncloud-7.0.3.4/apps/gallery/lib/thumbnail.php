@@ -108,7 +108,7 @@ class Thumbnail {
 			$mime = \OC_Helper::getMimetype($this->path);
 		}
 		if ($fp) {
-			\OCP\Response::enableCaching(3600*24*7);
+			\OCP\Response::enableCaching();
 			\OCP\Response::setLastModifiedHeader($mtime);
 			header('Content-Length: ' . $size);
 			header('Content-Type: ' . $mime);

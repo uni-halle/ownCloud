@@ -157,6 +157,12 @@ In ownCloud root folder call</p>
 <div class="highlight-bash"><div class="highlight"><pre>php occ db:convert-type <span class="o">[</span>options<span class="o">]</span> <span class="nb">type </span>username hostname database
 </pre></div>
 </div>
+<p>Available values for the <tt class="docutils literal"><span class="pre">type</span></tt> parameter are:</p>
+<ul class="simple">
+<li>mysql (for MySQL or MariaDB)</li>
+<li>oci (for Oracle)</li>
+<li>pgsql (for PostgreSQL)</li>
+</ul>
 <p>The Options</p>
 <ul class="simple">
 <li><tt class="docutils literal"><span class="pre">--port=&quot;3306&quot;</span></tt>                       the database port (optional)</li>

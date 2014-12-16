@@ -188,9 +188,17 @@ class OC {
 
 	public static function checkConfig() {
 		$l = OC_L10N::get('lib');
-		if (file_exists(self::$configDir . "/config.php")
-			and !is_writable(self::$configDir . "/config.php")
-		) {
+
+		// Create config in case it does not already exists
+		$configFilePath = self::$configDir .'/config.php';
+		if(!file_exists($configFilePath)) {
+			@touch($configFilePath);
+		}
+
+		// Check if config is writable
+		$configFileWritable = is_writable($configFilePath);
+		if (!$configFileWritable && !OC_Helper::isReadOnlyConfigEnabled()
+			|| !$configFileWritable && \OCP\Util::needUpgrade()) {
 			if (self::$CLI) {
 				echo $l->t('Cannot write into "config" directory!')."\n";
 				echo $l->t('This can usually be fixed by giving the webserver write access to the config directory')."\n";
@@ -573,14 +581,8 @@ class OC {
 			header('HTTP/1.1 400 Bad Request');
 			header('Status: 400 Bad Request');
 
-			$domain = $_SERVER['SERVER_NAME'];
-			// Append port to domain in case it is not
-			if($_SERVER['SERVER_PORT'] !== '80' && $_SERVER['SERVER_PORT'] !== '443') {
-				$domain .= ':'.$_SERVER['SERVER_PORT'];
-			}
-
 			$tmpl = new OCP\Template('core', 'untrustedDomain', 'guest');
-			$tmpl->assign('domain', $domain);
+			$tmpl->assign('domain', $_SERVER['SERVER_NAME']);
 			$tmpl->printPage();
 
 			exit();

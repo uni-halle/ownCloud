@@ -121,12 +121,14 @@ class OC_Mount_Config {
 
 		if ($data['user']) {
 			$user = \OC::$server->getUserManager()->get($data['user']);
-			if(!is_object($user)) {
-				$realUser=OCP\User::getUser();
-				\OCP\Util::writeLog('files_external',"userManager could not get Info about {$data['user']} user:$realUser",\OCP\Util::WARN);
+			if (!$user) {
+				\OC_Log::write(
+					'files_external',
+					'Cannot init external mount points for non-existant user "' . $data['user'] . '".',
+					\OC_Log::WARN
+				);
 				return;
 			}
-			
 			$userView = new \OC\Files\View('/' . $user->getUID() . '/files');
 			$changePropagator = new \OC\Files\Cache\ChangePropagator($userView);
 			$etagPropagator = new \OCA\Files_External\EtagPropagator($user, $changePropagator, \OC::$server->getConfig());

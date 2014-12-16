@@ -18,7 +18,7 @@ class APC extends Cache {
 	}
 
 	public function set($key, $value, $ttl = 0) {
-		return @apc_store($this->getPrefix() . $key, $value, $ttl);
+		return apc_store($this->getPrefix() . $key, $value, $ttl);
 	}
 
 	public function hasKey($key) {
