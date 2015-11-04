@@ -3,3 +3,4 @@ oc-data/owncloud.log
 upload-temp/*/
 db-backup/
 /config.php
+/owncloud-*/
