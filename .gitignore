@@ -1,5 +1,7 @@
 oc-data/*/
-oc-data/owncloud.log
+/oc-data/.htaccess
+/oc-data/index.html
+/oc-data/owncloud.log
 upload-temp/*/
 db-backup/
 /config.php
