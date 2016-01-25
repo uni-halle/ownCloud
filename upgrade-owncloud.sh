@@ -43,5 +43,6 @@ exit 3
 
 ## start
 rm $apacheRootLink
+chmod +x "$newCore/$upgradeScript"
 ln -s $newCore $apacheRootLink && (. $setupScript) && $php $apacheRootLink/$upgradeScript upgrade
 exit $?
