@@ -1,0 +1,3 @@
+<FilesMatch "\.(?:pem)$">
+require all denied
+</FilesMatch>

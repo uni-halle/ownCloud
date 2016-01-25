@@ -1,0 +1,38 @@
+#!/bin/bash
+
+function pwait() {
+       	while [ $(jobs -p | wc -l) -ge $1 ]; do
+                sleep 1
+        done
+}
+
+function decryptUserFiles() {
+	user=$1
+        output=/var/www/owncloud-prod/local-decryption/decrypted-files/$user
+	parallel=$(getconf _NPROCESSORS_ONLN) ## determine number of cpus
+	
+	IFS=$'\n'
+
+	for file in `egrep "^oc-data/$user/files/" /tmp/encrypted.list|grep -v .ocTransfer`; do
+		pwait $parallel
+		prefix="oc-data/$user/"
+		file="${file#"$prefix"}"
+		fname="$(basename $file)"
+		fileDir="${file%"$fname"}"
+		targetDir="$output/$fileDir"
+		target="$targetDir$fname"
+		mkdir -p "$targetDir"
+		#echo decrypting $file
+		#echo $fname $fileDir $output $targetDir $target
+		./decrypt-file-alternate "$user" "$file">"$output/$file" &
+		#echo
+	done
+	echo All jobs scheduled. Waiting to finish...
+	wait
+}
+
+if [ $# -gt 0 ]; then
+	decryptUserFiles $1
+fi
+
+

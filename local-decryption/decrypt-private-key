@@ -1,0 +1,27 @@
+#!/bin/bash
+
+function decryptUserPrivateKey() {
+  USER=$1
+  userLoginPass=$2
+  userPrivKeyPath=$({ find ../oc-data/$USER/ -iname $USER.privatekey; find ../oc-data/$USER/ -iname $USER.private.key; }|head -n1)
+  #userPrivKeyPath="$USER/files_encryption/OC_DEFAULT_MODULE/$USER.privateKey"
+  if [ ! -r "$userPrivKeyPath" ]; then
+    echo "decryptUserPrivateKey():: File "$userPrivKeyPath" does not exist or not enough permissions! Aborting."
+    return 1
+  fi
+  echo $userPrivKeyPath
+  encPrivKeyContentsALL="$(cat "$userPrivKeyPath")"
+  # Some non-GNU versions of sed do not support pattern matches. In that case use: perl -pne 's/(00iv00.*)?00iv00.*/$1 /'
+  encPrivKeyContentsBASE64="$( sed -r 's/^HBEGIN:.+:HEND-*//;s/(00iv00.*)?00iv00.*{16}xx/\1/' <(echo "${encPrivKeyContentsALL}") )"
+  plainPrivKeyIV="$( sed -r 's/^HBEGIN.*00iv00//;s/xx$//' <(echo "${encPrivKeyContentsALL}") )"
+  userLoginPassHEX=$(echo -n $userLoginPass |od -An -tx1 |tr -dc '[:xdigit:]')
+  plainPrivKeyIVHEX=$(echo -n $plainPrivKeyIV |od -An -tx1 |tr -dc '[:xdigit:]')
+
+  echo "$( openssl enc -AES-256-CFB -d -nosalt -base64 -A -K $userLoginPassHEX -iv $plainPrivKeyIVHEX -in <(echo $encPrivKeyContentsBASE64) )"
+}
+
+if [ $# -gt 1 ] ; then
+	decryptUserPrivateKey $1 $2
+	exit $?
+fi
+
