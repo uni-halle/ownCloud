@@ -10,10 +10,11 @@ function decryptUserFiles() {
 	user=$1
 	output=/var/www/owncloud-prod/local-decryption/decrypted-files/$user
 	parallel=$(getconf _NPROCESSORS_ONLN) ## determine number of cpus
+	parallel=8
 	
 	IFS=$'\n'
 
-	for file in `egrep "^oc-data/$user/files/" /tmp/encrypted.list|grep -v .ocTransfer`; do
+	for file in `egrep -o "oc-data/$user/files/.+$" /tmp/encrypted.list|grep -v .ocTransfer`; do
 		pwait $parallel
 		prefix="oc-data/$user/"
 		file="${file#"$prefix"}"
