@@ -1,7 +1,11 @@
 server side file decryption for ownCloud
 ========================================
 
-this directory is ment to be an alias in the oc apache root.
+> based on arno01/ocdec
+
+
+
+This directory is ment to be an alias in the oc apache root to give users the option to decrypt their files.
 
 
 # index.php
