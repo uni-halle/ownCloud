@@ -6,7 +6,7 @@ function decryptUserPrivateKey() {
   userPrivKeyPath=$({ find ../oc-data/$USER/ -iname $USER.privatekey; find ../oc-data/$USER/ -iname $USER.private.key; }|head -n1)
   #userPrivKeyPath="$USER/files_encryption/OC_DEFAULT_MODULE/$USER.privateKey"
   if [ ! -r "$userPrivKeyPath" ]; then
-    echo "decryptUserPrivateKey():: File "$userPrivKeyPath" does not exist or not enough permissions! Aborting."
+    echo "decryptUserPrivateKey():: File "$userPrivKeyPath" for '$USER' does not exist or not enough permissions! Aborting."
     return 1
   fi
   echo $userPrivKeyPath
