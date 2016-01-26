@@ -1,7 +1,7 @@
 server side file decryption for ownCloud
 ========================================
 
-> based on arno01/ocdec
+based on [ocdec](//github.com/arno01/ocdec) by `arno01`
 
 
 
