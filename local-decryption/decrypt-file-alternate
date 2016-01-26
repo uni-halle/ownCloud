@@ -27,7 +27,16 @@ function decryptFile() {
 	#userFileShareKeyPath="${USER}/files_encryption/keys/${encFilePath}/OC_DEFAULT_MODULE/${USER}.shareKey"
 	#encFileKeyPath="${USER}/files_encryption/keys/${encFilePath}/OC_DEFAULT_MODULE/fileKey"
 	userFileShareKeyPath="${USER}/files_encryption/share-keys/${encFilePath#files/}.${USER}.shareKey"
-	encFileKeyPath="${USER}/files_encryption/keys/${encFilePath#files/}.key"
+	encFileKeyPath="${USER}/files_encryption/keyfiles/${encFilePath#files/}.key"
+
+	if [ ! -f "$userFileShareKeyPath" ]; then
+		printErr "ShareKey not found: $userFileShareKeyPath. Aborting."
+		return 4
+	fi
+	if [ ! -f "$encFileKeyPath" ]; then
+		printErr "FileKey not found: $encFileKeyPath. Aborting."
+		return 5
+	fi
 
 	decUserFileShareKeyHEX="$( openssl rsautl -decrypt -inkey $userKeyFile -in "$userFileShareKeyPath" |od -An -tx1 |tr -dc '[:xdigit:]' )"
 	if [ -z "$decUserFileShareKeyHEX" ]; then
@@ -58,7 +67,7 @@ function decryptFile() {
 		encFileContentsBASE64=$(sed "${N}q;d" $base64blocksFileName)
 		plainFileIVHEX=$(echo -n "$IV" |od -An -tx1 |tr -dc '[:xdigit:]')
 		echo -n " - Decrypt $numBlocks Blocks:" $N $'\r'>&2
-		openssl enc -AES-256-CFB -d -nosalt -base64 -A -K $decFileKeyContentHEX -iv $plainFileIVHEX -in <(echo "$encFileContentsBASE64")
+		openssl enc -AES-256-CFB -d -nosalt -base64 -A -K "$decFileKeyContentHEX" -iv "$plainFileIVHEX" -in <(echo "$encFileContentsBASE64")
 		#php -r "echo openssl_decrypt('$encFileContentsBASE64', 'AES-256-CFB', '$decFileKeyContent', false, '$IV');"
 	done
 	printErr

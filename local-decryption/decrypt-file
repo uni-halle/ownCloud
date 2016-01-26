@@ -28,6 +28,15 @@ function decryptFile() {
 	#encFileKeyPath="${USER}/files_encryption/keys/${encFilePath}/OC_DEFAULT_MODULE/fileKey"
 	userFileShareKeyPath="${USER}/files_encryption/keys/${encFilePath#files/}/${USER}.shareKey"
 	encFileKeyPath="${USER}/files_encryption/keys/${encFilePath#files/}/fileKey"
+	
+	if [ ! -f "$userFileShareKeyPath" ]; then
+		printErr "ShareKey not found: $userFileShareKeyPath. Aborting."
+		return 4
+	fi
+	if [ ! -f "$encFileKeyPath" ]; then
+		printErr "FileKey not found: $encFileKeyPath. Aborting."
+		return 5
+	fi
 
 	decUserFileShareKeyHEX="$( openssl rsautl -decrypt -inkey $userKeyFile -in "$userFileShareKeyPath" |od -An -tx1 |tr -dc '[:xdigit:]' )"
 	if [ -z "$decUserFileShareKeyHEX" ]; then
