@@ -44,34 +44,18 @@ function decryptFile() {
 		return 3
 	fi
 
-	decFileKeyContent="$( openssl rc4 -d -in "$encFileKeyPath" -iv 0 -K $decUserFileShareKeyHEX )"
-	decFileKeyContentHEX="$( echo -n $decFileKeyContent |od -An -tx1 |tr -dc '[:xdigit:]' )"
-	# --- Get the FileKey ---
+	decFileKeyContentHEX="$( openssl rc4 -d -in "$encFileKeyPath" -K $decUserFileShareKeyHEX | od -An -tx1 | tr -dc '[:xdigit:]' )"
+        decFileKeyContentHEX=${decFileKeyContentHEX:0:64}
 
-	# --- Decrypt the file ---
-	# TODO: to figure out how to speed-up the decryption process.
-	#       bottlenecks:
-	#        - awk is running really slow, consuming lot of CPU
-	encFileContentsALL="$(cat "${USER}/$encFilePath")"
-	encFileContentsNOHEAD=$(echo -n "$encFileContentsALL" | sed -r 's/^HBEGIN:.+:HEND-*//')
-	N=0
-	base64blocksFileName=$(mktemp)
-	printErr " - Reading Payload"
-	echo -n "$encFileContentsNOHEAD" | sed -r "s/00iv00.{16}xx/\n/g" > $base64blocksFileName
-	numBlocks=$(wc -l < $base64blocksFileName)
-	printErr " - Blockwise Decryption"
-	for IV in $(echo -n "$encFileContentsNOHEAD" |LANG=C egrep -o '00iv00.{16}xx' |sed -r 's/^00iv00//;s/xx$//'); do
-		N=$[N+1]
-		echo -n " - Working $numBlocks Blocks:" $N $'\r'>&2
-		#encFileContentsBASE64=$(echo -n "$encFileContentsNOHEAD" |awk -F '00iv00................xx' -v N=$N '{print $N}')
-		encFileContentsBASE64=$(sed "${N}q;d" $base64blocksFileName)
-		plainFileIVHEX=$(echo -n "$IV" |od -An -tx1 |tr -dc '[:xdigit:]')
-		echo -n " - Decrypt $numBlocks Blocks:" $N $'\r'>&2
-		openssl enc -AES-256-CFB -d -nosalt -base64 -A -K "$decFileKeyContentHEX" -iv "$plainFileIVHEX" -in <(echo "$encFileContentsBASE64")
-		#php -r "echo openssl_decrypt('$encFileContentsBASE64', 'AES-256-CFB', '$decFileKeyContent', false, '$IV');"
-	done
-	printErr
-	# --- Decrypt the file ---
+        chunkSize=8192
+        while read -d '' -n $chunkSize CHUNK; do
+                #split chunk into payload an iv string (strip padding from iv)          
+                read payload iv <<<`echo $CHUNK | sed -r 's/(.*)00iv00(.{16})xx/\1 \2/'`
+                # convert base64 iv into hex
+                iv=$(echo -n "$iv" | od -An -tx1 | tr -dc '[:xdigit:]' )
+                # decode chunk
+                openssl enc -AES-256-CFB -d -nosalt -base64 -A -K $decFileKeyContentHEX -iv $iv -in <(echo "$payload")
+        done <<<`sed -r 's/^HBEGIN:.+:HEND-*//' <"$encFilePath"`
 	printErr "decryptFile():: Decryption of "${USER}/$encFilePath" finished."
 }
 
