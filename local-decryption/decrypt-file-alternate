@@ -48,14 +48,14 @@ function decryptFile() {
         decFileKeyContentHEX=${decFileKeyContentHEX:0:64}
 
         chunkSize=8192
-        while read -d '' -n $chunkSize CHUNK; do
+        while read -d '' -n $chunkSize CHUNK || [ -n $CHUNK ]; do
                 #split chunk into payload an iv string (strip padding from iv)          
                 read payload iv <<<`echo $CHUNK | sed -r 's/(.*)00iv00(.{16})xx/\1 \2/'`
                 # convert base64 iv into hex
                 iv=$(echo -n "$iv" | od -An -tx1 | tr -dc '[:xdigit:]' )
                 # decode chunk
                 openssl enc -AES-256-CFB -d -nosalt -base64 -A -K $decFileKeyContentHEX -iv $iv -in <(echo "$payload")
-        done <<<`sed -r 's/^HBEGIN:.+:HEND-*//' <"$encFilePath"`
+        done <<<`sed -r 's/^HBEGIN:.+:HEND-*//' <"${USER}/$encFilePath"`
 	printErr "decryptFile():: Decryption of "${USER}/$encFilePath" finished."
 }
 
