@@ -176,8 +176,8 @@ def parse_args():
     )
     a.add_argument('enc_file',
             nargs='+',
-            help=("Path to encrypted file\n"
-                    "(before template processing, unless --enc-file is used)"
+            help=("Path to encrypted file(s)"
+                    "(subject to template processing, unless -e is used)"
             )
     )
     num_chunks_default = 1
@@ -185,9 +185,10 @@ def parse_args():
             type=int,
             default=num_chunks_default,
             metavar='INT',
-            help=("Number of chunks written at once. If 0 or negative, keep "
-                    "in memory and only write once entire file has been "
-                    "processed (Default: {})".format(num_chunks_default)
+            help=("Number of decrypted chunks to keep in memory before "
+                    "writing out to file. If 0 or negative, keep entire file "
+                    "in memory before writing out. "
+                    "(Default: {})".format(num_chunks_default)
             )
     )
     alt_defaults = a.add_mutually_exclusive_group()
@@ -235,8 +236,9 @@ def parse_args():
                     ${ef_nofd}: Path to encrypted file, with first occurrence of the "files/"
                       directory removed
 
-                    You cannot use the explicit file options (-o, -u, -s, -f)
-                    if you have multiple input files, but you can use -e.
+                    You cannot use the explicit input file options -u, -s, and -f if you have
+                    multiple input files, but you can use -e to omit template processing for
+                    input file(s).
                     """
             )
     )
@@ -246,7 +248,7 @@ def parse_args():
     enc_file_options.add_argument('-E', '--ef-template',
             metavar='TMPL',
             default=None,
-            help=("Template for encrypted file.\n"
+            help=("Template for encrypted file. "
                     "(Default: {})".format(ef_template_default)
             )
     )
@@ -261,18 +263,17 @@ def parse_args():
     out_file_options.add_argument('-O', '--of-template',
             metavar='TMPL',
             default=None,
-            help=("Template for output file.\n"
-                    "If the output file resolves exactly to the input file,\n"
-                    "it is decrypted to a temporary path and moved into place\n"
-                    "afterwards, overwriting the input file.\n"
+            help=("Template for output file. "
+                    "If the output file resolves exactly to the input file, "
+                    "the input file is overwritten."
             )
     )
     out_file_options.add_argument('-o', '--out-file',
             default=None,
             metavar='FILE',
-            help=("Explicit path to output file. Not usable together with -O.\n"
-                    "If it resolves exactly to the input file, it is\n"
-                    "decrypted to a temporary path and moved into place\n"
+            help=("Explicit path to output file. Not usable together with -O. "
+                    "If it resolves exactly to the input file, it is "
+                    "decrypted to a temporary path and moved into place "
                     "afterwards, overwriting the input file. "
                     "(Default: write to stdout)"
             )
@@ -283,7 +284,7 @@ def parse_args():
     user_key_options.add_argument('-U', '--uk-template',
             metavar='TMPL',
             default=None,
-            help=("Template for user key.\n"
+            help=("Template for user key. "
                     "(Default: {})".format(uk_template_default)
             )
     )
@@ -297,7 +298,7 @@ def parse_args():
     share_key_options.add_argument('-S', '--sk-template',
             metavar='TMPL',
             default=None,
-            help=("Template for file share key.\n"
+            help=("Template for file share key. "
                     "(Default: {})".format(sk_template_default)
             )
     )
@@ -313,7 +314,7 @@ def parse_args():
     file_key_options.add_argument('-F', '--fk-template',
             metavar='TMPL',
             default=None,
-            help=("Template for encrypted file.\n"
+            help=("Template for encrypted file. "
                     "(Default: {})".format(fk_template_default)
             )
     )
