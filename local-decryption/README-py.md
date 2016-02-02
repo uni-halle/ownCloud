@@ -2,7 +2,7 @@
 
 ## License
 
-MIT. (See LICENSE.)
+MIT. (See LICENSE-py.)
 
 ## Requirements
 
