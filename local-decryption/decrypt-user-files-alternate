@@ -24,7 +24,7 @@ function decryptUserFiles() {
 		mkdir -p "$targetDir"
 		#echo decrypting $file
 		#echo $fname $fileDir $output $targetDir $target
-		./decrypt-file-alternate "$user" "$file">"$output/$file" &
+		./decrypt-file-alternate "$user" "$file" >"$output/$file" &
 		#echo
 	done
 	echo All jobs scheduled. Waiting to finish...
@@ -32,6 +32,7 @@ function decryptUserFiles() {
 }
 
 if [ $# -gt 0 ]; then
+	trap "kill -SIGTERM -$$" INT TERM
 	decryptUserFiles $1
 fi
 

@@ -33,6 +33,7 @@ function decryptUserFiles() {
 }
 
 if [ $# -gt 0 ]; then
+	trap "kill -SIGTERM -$$" INT TERM
 	decryptUserFiles $1
 fi
 
