@@ -14,7 +14,8 @@ function decryptFile() {
 		printErr "decryptFile():: File "${USER}/$encFilePath" does not exist or not enough permissions! Aborting."
 		return 1
 	fi
-	if ! grep -q "^HBEGIN:" "${USER}/$encFilePath"; then
+	#if ! grep -q "^HBEGIN:" "${USER}/$encFilePath"; then
+	if ! head -c 8 "${USER}/$encFilePath"| grep -q "^HBEGIN:"; then
 		printErr "decryptFile():: File "${USER}/$encFilePath" does not seem to be encrypted! Aborting."
 		return 2
 	fi
@@ -47,16 +48,19 @@ function decryptFile() {
         decFileKeyContentHEX="$( openssl rc4 -d -in "$encFileKeyPath" -K $decUserFileShareKeyHEX | od -An -tx1 | tr -dc '[:xdigit:]' )"
 	decFileKeyContentHEX=${decFileKeyContentHEX:0:64}
 
+	finfo=`basename $encFilePath`
+
         chunkSize=8192
-        while read -d '' -n $chunkSize CHUNK || [ ! -z $CHUNK ]; do
+        while read -d '' -n $chunkSize CHUNK || [ "$CHUNK" ]; do
                 #split chunk into payload an iv string (strip padding from iv)          
 		iv=;payload=;
 		read payload iv <<<`echo $CHUNK | sed -r 's/(.*)00iv00(.{16})xx/\1 \2/'`
-		if [ -z $iv ]; then printErr BREAK; break; fi
+		if [ -z $iv ]; then printErr "no IV - chunk: $CHUNK"; break; fi
                 CHUNK=
 		# convert base64 iv into hex
                 iv=$(echo -n "$iv" | od -An -tx1 | tr -dc '[:xdigit:]' )
                 # decode chunk
+		#printErr "decryptFile($finfo)::CHUNK #$iv#"
                 openssl enc -AES-256-CFB -d -nosalt -base64 -A -K $decFileKeyContentHEX -iv $iv -in <(echo "$payload")
         #done <<<`sed -r 's/^HBEGIN:.+:HEND-*//' <"${USER}/${encFilePath}"`
         done < <(dd bs=$chunkSize skip=1 if="${USER}/$encFilePath")
