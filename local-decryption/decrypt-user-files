@@ -30,6 +30,7 @@ function decryptUserFiles() {
 	done
 	echo All jobs scheduled. Waiting to finish...
 	wait
+	echo All files for user $user decrypted.
 }
 
 if [ $# -gt 0 ]; then
