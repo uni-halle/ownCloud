@@ -72,9 +72,9 @@ fieldset {
 <div class="logo"></div>
 <h1>Privaten Schlüssel entschlüsseln</h1>
 <form method="post" action="">
-<p>
-Bitte verwenden Sie folgendes Formular, um Ihren privaten OwnCloud-Schlüssel zu entschlüsseln. Ihr Passwort wird nicht gespeichert.
-</p>
+<p>Bitte verwenden Sie folgendes Formular, um Ihren privaten OwnCloud-Schlüssel zu entschlüsseln. Ihr Passwort wird nicht gespeichert.</p>
+<p>Nach erfolgreicher Entschlüsselung sind die System-Administratoren in der Lage Ihnen die verschlüsselten Dateien wiederherzustellen. Sobald dieser Vorgang abgeschlossen ist, wird sich einer der Kollegen bei Ihnen melden.</p>
+<p>Für Fragen und Probleme steht Ihnen unser Support unter <a href="mailto:cloud@uni-halle.de?subject=Entschlüsselung" title="Mail an den ownCloud-Support im IT-Servicezentrum">cloud@uni-halle.de</a> gern zur Verfüfung.</p>
 <fieldset><legend>Login-Daten</legend>
 <input type="text" name="nkz" value="<?=isset($u_)?$u_:''?>" placeholder="Nutzer-Kennzeichen"><br />
 <input type="password" name="pass" placeholder="Passwort">
