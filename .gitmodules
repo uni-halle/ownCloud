@@ -1,0 +1,3 @@
+[submodule "db-tool"]
+	path = db-tool
+	url = git@git.itz.uni-halle.de:abewm/dbtool.git
