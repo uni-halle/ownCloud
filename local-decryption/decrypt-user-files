@@ -18,7 +18,7 @@ function decryptUserFiles() {
 		pwait $parallel
 		prefix="oc-data/$user/"
 		file="${file#"$prefix"}"
-		fname="$(basename $file)"
+		fname=$(basename "$file")
 		fileDir="${file%"$fname"}"
 		targetDir="$output/$fileDir"
 		target="$targetDir$fname"

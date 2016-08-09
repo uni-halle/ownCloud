@@ -48,7 +48,7 @@ function decryptFile() {
         decFileKeyContentHEX="$( openssl rc4 -d -in "$encFileKeyPath" -K $decUserFileShareKeyHEX | od -An -tx1 | tr -dc '[:xdigit:]' )"
 	decFileKeyContentHEX=${decFileKeyContentHEX:0:64}
 
-	finfo=`basename $encFilePath`
+	finfo=`basename "$encFilePath"`
 
         chunkSize=8192
         while read -d '' -n $chunkSize CHUNK || [ "$CHUNK" ]; do
@@ -63,7 +63,7 @@ function decryptFile() {
 		#printErr "decryptFile($finfo)::CHUNK #$iv#"
                 openssl enc -AES-256-CFB -d -nosalt -base64 -A -K $decFileKeyContentHEX -iv $iv -in <(echo "$payload")
         #done <<<`sed -r 's/^HBEGIN:.+:HEND-*//' <"${USER}/${encFilePath}"`
-        done < <(dd bs=$chunkSize skip=1 if="${USER}/$encFilePath")
+        done < <(dd status=none bs=$chunkSize skip=1 if="${USER}/$encFilePath")
 
 	decFileKeyContentHEX="$( echo -n $decFileKeyContent |od -An -tx1 |tr -dc '[:xdigit:]' )"
 	printErr "decryptFile():: Decryption of "${USER}/$encFilePath" finished."
