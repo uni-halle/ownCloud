@@ -17,12 +17,12 @@ function decryptUserFiles() {
 		pwait $parallel
 		prefix="oc-data/$user/"
 		file="${file#"$prefix"}"
-		fname="$(basename $file)"
+		fname=$(basename "$file")
 		fileDir="${file%"$fname"}"
 		targetDir="$output/$fileDir"
 		target="$targetDir$fname"
 		mkdir -p "$targetDir"
-		#echo decrypting $file
+		#echo "decrypting $file ($fname | $fileDir) "
 		#echo $fname $fileDir $output $targetDir $target
 		./decrypt-file-alternate "$user" "$file" >"$output/$file" &
 		#echo
